@@ -19,8 +19,10 @@ class czas : AppCompatActivity() {
             val (h, m, s) = arrayOf(h1.text.toString().toInt(), m1.text.toString().toInt(), s1.text.toString().toInt())
             val (h_, m_, s_) = arrayOf(h2.text.toString().toInt(), m2.text.toString().toInt(), s2.text.toString().toInt())
             val (h__, m__, s__) = arrayOf(h + h_, m + m_, s + s_)
-            Log.i("czas", "h__ = $h__, m__ = $m__, s__ = $s__")
-            h1.setText(h__.toString()); m1.setText(m__.toString()); s1.setText(s__.toString())
+            val finalH = h__ + (m__ + s__ / 60) / 60
+            val finalM = (m__ + s__ / 60) % 60
+            val finalS = s__ % 60
+            h1.setText(finalH.toString()); m1.setText(finalM.toString()); s1.setText(finalS.toString())
             h2.setText("0"); m2.setText("0"); s2.setText("0")
         }
 
@@ -28,9 +30,13 @@ class czas : AppCompatActivity() {
         buttonMinus.setOnClickListener {
             val (h, m, s) = arrayOf(h1.text.toString().toInt(), m1.text.toString().toInt(), s1.text.toString().toInt())
             val (h_, m_, s_) = arrayOf(h2.text.toString().toInt(), m2.text.toString().toInt(), s2.text.toString().toInt())
-            val (h__, m__, s__) = arrayOf(h - h_, m - m_, s - s_)
-            Log.i("czas", "h__ = $h__, m__ = $m__, s__ = $s__")
-            h1.setText(h__.toString()); m1.setText(m__.toString()); s1.setText(s__.toString())
+            val secondsSum1 = h * 3600 + m * 60 + s
+            val secondsSum2 = h_ * 3600 + m_ * 60 + s_
+            val secondsDiff = secondsSum1 - secondsSum2
+            val finalH = secondsDiff / 3600
+            val finalM = (secondsDiff % 3600) / 60
+            val finalS = secondsDiff % 60
+            h1.setText(finalH.toString()); m1.setText(finalM.toString()); s1.setText(finalS.toString())
             h2.setText("0"); m2.setText("0"); s2.setText("0")
         }
 

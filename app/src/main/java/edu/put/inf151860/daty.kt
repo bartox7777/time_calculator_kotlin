@@ -8,6 +8,7 @@ import android.widget.DatePicker
 import android.widget.TextView
 import java.util.Calendar
 import java.util.Date
+import kotlin.math.floor
 
 class daty : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,28 +66,28 @@ class daty : AppCompatActivity() {
         }
     }
 
-//    private fun countEaster(date: Date): Date {
-//        val calendar = Calendar.getInstance()
-//        calendar.time = date
-//        val year = calendar.get(Calendar.YEAR)
-//        val a = year % 19
-//        val b = year / 100
-//        val c = year % 100
-//        val d = b / 4
-//        val e = b % 4
-//        val f = (b + 8) / 25
-//        val g = (b - f + 1) / 3
-//        val h = (19 * a + b - d - g + 15) % 30
-//        val i = c / 4
-//        val k = c % 4
-//        val l = (32 + 2 * e + 2 * i - h - k) % 7
-//        val m = (a + 11 * h + 22 * l) / 451
-//        val p = (h + l - 7 * m + 114) % 31
-//        val day = p + 1
-//        val month = (h + l - 7 * m + 114) / 31
-//        calendar.set(year, month, day)
-//        return calendar.time
-//    }
+    private fun countEaster(date: Date): Calendar {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val year = calendar.get(Calendar.YEAR)
+        val a = year % 19
+        val b = floor(year / 100.0).toInt()
+        val c = year % 100
+        val d = floor(b / 4.0).toInt()
+        val e = b % 4
+        val f = floor((b + 8) / 25.0).toInt()
+        val g = floor((b - f + 1) / 3.0).toInt()
+        val h = (19 * a + b - d - g + 15) % 30
+        val i = floor(c / 4.0).toInt()
+        val k = c % 4
+        val l = (32 + 2 * e + 2 * i - h - k) % 7
+        val m = floor((a + 11 * h + 22 * l) / 451.0).toInt()
+        val p = (h + l - 7 * m + 114) % 31
+        val day = p + 1
+        val month = floor((h + l - 7 * m + 114) / 31.0).toInt()
+        calendar.set(year, month - 1, day)
+        return calendar
+    }
 
     private fun countWorkdays(date1: Date, date2: Date): Long {
         val fixedHolidays = arrayOf( // day, month
@@ -101,21 +102,52 @@ class daty : AppCompatActivity() {
             "26 " + Calendar.DECEMBER.toString()
         )
 
+        val exceptionHolidays = arrayOf( // day, month, year
+            "8 " + Calendar.APRIL.toString() + " 2005",
+            "12 " + Calendar.NOVEMBER.toString() + " 2018"
+        )
+
         val calendar1 = Calendar.getInstance()
         calendar1.time = date1
 
         val calendar2 = Calendar.getInstance()
         calendar2.time = date2
 
+        var easter: Calendar
+        var easter2: Calendar
+        var easter3: Calendar
+//        val exc1 = Calendar.getInstance()
+//        val exc2 = Calendar.getInstance()
+//        exc1.set(2005, Calendar.APRIL, 8)
+//        exc2.set(2018, Calendar.NOVEMBER, 12)
+
         var daysBetween = 0L
         if (calendar1.before(calendar2)) {
             while (calendar1.before(calendar2)) {
+                easter = countEaster(calendar1.time)
+                easter2 = countEaster(calendar1.time)
+                easter2.add(Calendar.DAY_OF_MONTH, 1)
+                easter3 = countEaster(calendar1.time)
+                easter3.add(Calendar.DAY_OF_MONTH, 60)
+
+
+//                println(easter2.get(Calendar.DAY_OF_MONTH).toString() + " " + easter2.get(Calendar.MONTH).toString() + " " + easter2.get(Calendar.YEAR).toString())
+//                println(calendar1.get(Calendar.DAY_OF_MONTH).toString() + " " + calendar1.get(Calendar.MONTH).toString() + " " + calendar1.get(Calendar.YEAR).toString())
+//                println(calendar1.time.equals(easter2.time))
                 if (calendar1.get(Calendar.DAY_OF_WEEK) !in arrayOf(
-                        Calendar.SATURDAY, Calendar.SUNDAY
-                    ) && !fixedHolidays.contains(
+                        Calendar.SATURDAY,
+                        Calendar.SUNDAY
+                    ) &&
+                    !fixedHolidays.contains(
                         calendar1.get(Calendar.DAY_OF_MONTH).toString() + " " + calendar1.get(
                             Calendar.MONTH
                         ).toString()
+                    ) && !calendar1.time.equals(easter.time) && !calendar1.time.equals(easter2.time) && !calendar1.time.equals(
+                        easter3.time
+                    ) && !exceptionHolidays.contains(
+                        calendar1.get(Calendar.DAY_OF_MONTH).toString() + " " + calendar1.get(
+                            Calendar.MONTH
+                        ).toString() + " " + calendar1.get(Calendar.YEAR).toString()
                     )
                 ) {
                     // print calendar1.time
@@ -125,12 +157,25 @@ class daty : AppCompatActivity() {
             }
         } else if (calendar1.after(calendar2)) {
             while (calendar1.after(calendar2)) {
+                easter = countEaster(calendar1.time)
+                easter2 = countEaster(calendar1.time)
+                easter2.add(Calendar.DAY_OF_MONTH, 1)
+                easter3 = countEaster(calendar1.time)
+                easter3.add(Calendar.DAY_OF_MONTH, 60)
+
+
                 if (calendar1.get(Calendar.DAY_OF_WEEK) !in arrayOf(
                         Calendar.SATURDAY, Calendar.SUNDAY
                     ) && !fixedHolidays.contains(
                         calendar1.get(Calendar.DAY_OF_MONTH).toString() + " " + calendar1.get(
                             Calendar.MONTH
                         ).toString()
+                    ) && !calendar1.time.equals(easter.time) && !calendar1.time.equals(easter2.time) && !calendar1.time.equals(
+                        easter3.time
+                    ) && !exceptionHolidays.contains(
+                        calendar1.get(Calendar.DAY_OF_MONTH).toString() + " " + calendar1.get(
+                            Calendar.MONTH
+                        ).toString() + " " + calendar1.get(Calendar.YEAR).toString()
                     )
                 ) {
                     // print calendar1.time

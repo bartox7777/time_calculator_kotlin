@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import kotlin.math.abs
 
 class czas : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +35,8 @@ class czas : AppCompatActivity() {
             val secondsSum2 = h_ * 3600 + m_ * 60 + s_
             val secondsDiff = secondsSum1 - secondsSum2
             val finalH = secondsDiff / 3600
-            val finalM = (secondsDiff % 3600) / 60
-            val finalS = secondsDiff % 60
+            val finalM = abs((secondsDiff % 3600) / 60)
+            val finalS = abs(secondsDiff % 60)
             h1.setText(finalH.toString()); m1.setText(finalM.toString()); s1.setText(finalS.toString())
             h2.setText("0"); m2.setText("0"); s2.setText("0")
         }
